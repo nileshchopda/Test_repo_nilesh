@@ -49,3 +49,63 @@ The `extract_sections` function is a critical first step in the document process
 ---
 
 This documentation provides a clear and comprehensive explanation of the `extract_sections` function within the PL 751 project, detailing its role, logic, and implementation in segmenting the document for further processing.
+
+
+
+---------------------------------------------------------------------------------------------------------
+Certainly! Here’s the detailed documentation for the `replace_soil_conditions` function within the PL 751 project framework:
+
+---
+
+## Function Documentation: `replace_soil_conditions`
+
+### Overview
+
+The `replace_soil_conditions` function is specifically tailored to enhance the readability and analysis capability of soil condition data extracted from the document. It operates by refining the extracted data using targeted regular expressions to ensure that all soil condition mentions are uniformly formatted and clearly identifiable.
+
+### Function Purpose
+
+This function processes extracted soil condition data throughout the document's text, applying uniform formatting rules to various mentions of soil conditions. Its purpose is to standardize these mentions, which improves the clarity and usability of the data in subsequent analyses or reports.
+
+### Implementation Details
+
+#### Regular Expression Logic
+
+- **Soil Condition Pattern**: `r"Soil Condition\s*(:[a-zA-Z]+: [^:]+Ohm-cm)\s*(:[a-zA-Z]+: [^:]+Ohm-cm)"`
+  - **Purpose**: Captures detailed descriptions of soil conditions, specifically focusing on conductivity measurements presented in Ohm-cm.
+  - **Explanation**: This complex pattern is designed to accurately identify detailed and specific measurements related to soil conditions, which are crucial for the technical assessment of the piping inspection and remedial actions.
+
+#### Function Logic
+
+1. **Data Extraction**: Searches for patterns that match the predefined soil condition regex within each component's text.
+2. **Data Processing**:
+   - For each match found, the text is split into its constituent parts, separating the type of condition from its value.
+   - This separation allows for the individual processing of each soil condition, ensuring detailed attention to the formatting and presentation of each.
+3. **Condition Formatting**:
+   - The function formats each condition into a more readable form, appending it to a list of conditions.
+   - Additionally, it generates sub-conditions (if necessary) to provide more granular detail, using an alphabetical identifier for each sub-condition.
+
+#### Code Explanation
+
+```python
+for section, section_data in kv_component_json.items():
+    if 'kv_components' in section_data:
+        kv_components = section_data['kv_components']
+        for key, value in kv_components.items():
+            value = process_soil_conditions(value)
+            kv_components[key] = value
+```
+
+- Iterates through each section and its components within the document's structured data.
+- Applies the `process_soil_conditions` function to each component's text, which extracts and formats all soil conditions according to the specified pattern.
+- Updates the text of each component with the newly formatted soil conditions, ensuring that all data is presented uniformly across the document.
+
+### Conclusion
+
+The `replace_soil_conditions` function is vital for ensuring the uniformity and clarity of soil condition data across the PL 751 document. By standardizing the format of this data, the function facilitates more accurate and effective analysis, contributing significantly to the project's goals of enhancing the quality and accessibility of information within piping inspection reports. This function exemplifies the project’s commitment to high standards of data processing and presentation.
+
+---
+
+This documentation provides a comprehensive view of the `replace_soil_conditions` function, its purpose, implementation, and the regular expression logic used to achieve its objectives. Similar documentation can be crafted for other functions by detailing the specific logic, purpose, and code implementation strategies used within each.
+
+

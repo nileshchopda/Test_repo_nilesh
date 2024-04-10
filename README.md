@@ -160,30 +160,79 @@ This function aims to automate the extraction and conversion of data from PDF do
 
 ```python
 def extract_json_from_pdf(file, patterns=None):
+    """
+    Transforms a PDF document into a structured JSON format by processing it through several steps, 
+    involving text extraction, data segmentation, cleaning, and structuring.
+
+    This function aims to automate the extraction and conversion of information from PDF documents,
+    facilitating easy manipulation and accessibility of the content. The process involves using 
+    custom logic alongside Azure's Form Recognizer client to analyze and parse the document.
+
+    Parameters:
+    - file (str): The file path for the PDF document to be processed.
+    - patterns (dict, optional): A dictionary of regex patterns used for splitting the document's text 
+                                 based on specific markers or sketches.
+
+    Steps:
+    1. PDF to Text Conversion: Utilizes Azure Form Recognizer to convert PDF content into markdown-like text.
+    2. Document Analysis: Analyzes the text to extract key-value pairs and other structured data.
+    3. Text Segmentation: Segments the text based on predefined patterns to isolate relevant sections.
+    4. Text Cleaning: Applies regex-based cleaning functions to the text segments to standardize data presentation.
+    5. Section Extraction: Further structures the cleaned text into logical sections based on headers.
+    6. Nested Dictionary Creation: Organizes the sections into a nested dictionary format.
+    7. Data Tagging: Classifies data based on question type and other criteria.
+    8. JSON Conversion: Serializes the tagged and structured data into JSON format.
+
+    Returns:
+    - str: A stringified JSON format of the processed PDF content, representing the document's data as a structured and easily manipulable object.
+
+    Usage Example:
+    >>> json_output = extract_json_from_pdf("path_to_document.pdf", patterns={"header": r"Part [A-Z]"})
+    >>> print(json_output)
+
+    Notes:
+    - The function assumes the existence of auxiliary functions such as `extract_key_values`, `split_text_based_on_sketch`, 
+      `remove_patterns`, `extract_sections`, `modify_section_heading`, `extract_section_text`, `create_nested_dict`, 
+      and `tag_question_type` for various processing steps.
+    - Errors or unexpected input (such as an invalid file path or incorrect patterns) should be handled where the functions are called.
+
+    """
     with open(file, 'rb') as f:
-        document = f.read()  # PDF reading and conversion to markdown-like text
-
-    result = document_analysis_client.begin_analyze_document(document)  # Document analysis to extract data
-
-    kv_dict = extract_key_values(result)  # Extraction of key-value pairs
-
-    parts = split_text_based_on_sketch(result['content'], patterns)  # Segmentation of text based on patterns
-
-    cleaned_parts = remove_patterns(parts, patterns)  # Cleaning text segments
-
-    sections = extract_sections(cleaned_parts)  # Extracting structured sections
-
+        # Read the PDF file and convert it to a markdown-like text format
+        document = f.read()
+    
+    # Start document analysis using a preconfigured OCR client (assumed to be set up)
+    result = document_analysis_client.begin_analyze_document(document)
+    
+    # Extract key-value pairs from the document
+    kv_dict = extract_key_values(result)
+    
+    # Segment the text based on custom-defined patterns (if any)
+    parts = split_text_based_on_sketch(result['content'], patterns)
+    
+    # Clean the text segments by removing unwanted patterns
+    cleaned_parts = remove_patterns(parts, patterns)
+    
+    # Extract structured sections from the cleaned text parts
+    sections = extract_sections(cleaned_parts)
+    
+    # Process each section text
     for i, section_text in enumerate(sections):
-        modified_section_text = modify_section_heading(section_text)  # Modifying section headers
-        sections[i] = extract_section_text(modified_section_text)  # Extracting text from sections
-
-    kv_components_json = create_nested_dict(sections)  # Creating a nested dictionary from sections
-
-    tagged_components = tag_question_type(kv_components_json)  # Tagging components
-
-    json_data = json.dumps(tagged_components, indent=2)  # Converting to JSON
-
+        # Modify section headers and extract text accordingly
+        modified_section_text = modify_section_heading(section_text)
+        sections[i] = extract_section_text(modified_section_text)
+    
+    # Create a nested dictionary from the processed section texts
+    kv_components_json = create_nested_dict(sections)
+    
+    # Tag the components based on their question types
+    tagged_components = tag_question_type(kv_components_json)
+    
+    # Convert the tagged components dictionary to JSON format
+    json_data = json.dumps(tagged_components, indent=2)
+    
     return json_data
+
 ```
 
 ### Detailed Steps and Logic

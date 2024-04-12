@@ -1,0 +1,57 @@
+Sub CreatePresentationFromTextFile()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Change the path to the location of your text file
+    Dim TextFile As String
+    TextFile = "C:\Users\YourUsername\Desktop\PresentationContent.txt"
+    
+    Dim file As Object
+    Set file = fso.OpenTextFile(TextFile, ForReading)
+    
+    Dim pptApp As Object
+    Set pptApp = CreateObject("PowerPoint.Application")
+    pptApp.Visible = True
+    
+    Dim pptPres As Object
+    Set pptPres = pptApp.Presentations.Add
+    
+    Dim slideIndex As Integer
+    slideIndex = 1
+    
+    Dim line As String
+    Dim slideText As String
+    slideText = ""
+    
+    Do Until file.AtEndOfStream
+        line = file.ReadLine
+        
+        If Left(line, 6) = "Title:" Then
+            ' Add a new slide with title
+            If slideIndex > 1 Then
+                ' Add content to previous slide before creating new
+                AddSlide pptPres, slideIndex, slideText
+                slideIndex = slideIndex + 1
+                slideText = ""
+            End If
+            slideText = slideText & line & vbCrLf
+        Else
+            slideText = slideText & line & vbCrLf
+        End If
+    Loop
+    
+    ' Add the last slide
+    If slideText <> "" Then
+        AddSlide pptPres, slideIndex, slideText
+    End If
+    
+    file.Close
+    Set file = Nothing
+    Set fso = Nothing
+End Sub
+
+Private Sub AddSlide(pptPres As Object, index As Integer, text As String)
+    Dim slide As Object
+    Set slide = pptPres.Slides.Add(index, ppLayoutText)
+    slide.Shapes(1).TextFrame.TextRange.Text = text
+End Sub

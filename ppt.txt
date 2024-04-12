@@ -1,0 +1,119 @@
+Title Slide:
+Title: Comparing Project Setups: Liquid Loading Template vs. Cookiecutter Template for Enhanced ML CI/CD Pipelines
+Subtitle: A Technical Deep-Dive into Advancing ML Project Structures
+Presented by: [Your Name]
+Date: [Presentation Date]
+Organization: [Your Organization]
+
+Agenda:
+1. Introduction to Project Templates
+2. Overview of Current Setup (Liquid Loading Template)
+3. Challenges with the Current Setup
+4. Introduction to the Cookiecutter Template
+5. Benefits of Migrating to Cookiecutter Template
+6. Detailed Comparison
+   - Configuration and Customization
+   - CI/CD Pipeline Execution
+   - Testing Practices
+   - Dev, Staging, and Prod Environments
+7. Migration Strategy
+8. Conclusion
+9. Q&A
+
+Introduction to Project Templates:
+Purpose of Project Templates:
+  - To provide a standardized, reproducible, and efficient methodology for setting up CI/CD pipelines, especially in complex environments like machine learning projects.
+Liquid Loading Template:
+  - A manual and flexible setup typically used in smaller or less complex projects.
+Cookiecutter Template:
+  - A structured and standardized setup from the Databricks MLOps Stack, designed to optimize large-scale and complex projects.
+
+Overview of Current Setup (Liquid Loading Template):
+Components:
+  - Manual scripts for data preparation, model training, evaluation, and deployment.
+  - Use of Jenkins and CircleCI for managing CI/CD tasks.
+Workflow:
+  name: Manual CI/CD Pipeline
+  on: [push, pull_request]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Test with pytest
+        run: pytest
+    deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+      - name: Deploy to Databricks
+        run: |
+          databricks fs cp models/model.py dbfs:/mnt/models/model.py --overwrite
+          databricks jobs create --json-file job-settings.json
+
+Challenges with the Current Setup:
+Scalability Issues:
+  - Difficult to manage as project complexity increases.
+Inconsistencies Across Environments:
+  - Dev, staging, and prod environments may have different configurations leading to potential deployment failures.
+High Maintenance Cost:
+  - Frequent manual updates and configurations are required.
+Security Risks:
+  - Manual secret management poses a higher risk of leaks.
+
+Introduction to the Cookiecutter Template:
+What is the Cookiecutter Template?
+  - A component of the Databricks MLOps Stack that uses structured directories and standardized scripts.
+Core Components:
+  - Pre-configured GitHub Actions for CI/CD.
+  - Standardized testing, building, and deployment scripts.
+Initial Setup:
+  pip install cookiecutter
+  cookiecutter gh:databricks/MLOps-Stack
+
+Benefits of Migrating to Cookiecutter Template:
+Standardization:
+  - Uniform project structures and scripts across all environments.
+Automation:
+  - Automated workflows for testing, building, and deployment phases.
+Security Improvements:
+  - Enhanced secret management and compliance features.
+Reduced Operational Costs:
+  - Decrease in time and resources needed for maintenance.
+
+Detailed Comparison:
+Configuration and Customization:
+  - Liquid Loading: Highly customizable but lacks standardization.
+  - Cookiecutter: Less flexible but significantly more standardized and easier to configure.
+CI/CD Pipeline Execution:
+  - Liquid Loading: Manually managed with potential for errors.
+  - Cookiecutter: Automated management with reduced error rates.
+Testing Practices:
+  - Liquid Loading: Ad-hoc testing setups prone to environmental discrepancies.
+  - Cookiecutter: Standardized testing environments minimizing discrepancies.
+Dev, Staging, Prod Environments:
+  - Liquid Loading: Often inconsistently configured which may cause integration issues.
+  - Cookiecutter: Consistently configured environments enhancing reliable integrations.
+
+Migration Strategy:
+1. Assessment of Current Infrastructure
+   - Review current CI/CD setups, scripts, and environment configurations.
+2. Planning and Preparation
+   - Define objectives for migration and outline necessary resources.
+3. Execution
+   - Implement the Cookiecutter template.
+   - Integrate existing scripts into the new structure.
+4. Testing and Optimization
+   - Conduct thorough testing across all environments.
+   - Optimize the workflows based on test results.
+
+Conclusion:
+Recap of Benefits:
+  - The migration from the Liquid Loading Template to the Cookiecutter Template enhances efficiency, security, and consistency across ML projects.
+Future Prospects:
+  - With the Cookiecutter Template, scaling up and managing complex projects becomes significantly more manageable.
+
+Q&A:
+Open Floor for Questions
